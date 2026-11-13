@@ -16,10 +16,48 @@
   pointer-events: none;
 }
 
-/* Step 4.3 + 4.4: station circles */
+/* Step 6: colors shared by the circles and the legend */
+#map svg circle,
+.legend > div {
+  --color-departures: steelblue;
+  --color-arrivals: darkorange;
+  --color: color-mix(
+    in oklch,
+    var(--color-departures) calc(100% * var(--departure-ratio)),
+    var(--color-arrivals)
+  );
+}
+
+/* Step 4.3 + 4.4 + 6.1: station circles */
 #map svg circle {
-  fill: steelblue;
+  fill: var(--color);
   fill-opacity: 0.6;
   stroke: white;
   pointer-events: auto;
+}
+
+/* Step 6.2: legend (Design 2: separate swatches & labels) */
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 1.5em;
+  margin-block: 1em;
+}
+
+.legend-label {
+  color: gray;
+}
+
+.legend > div {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+}
+
+.legend > div::before {
+  content: "";
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  background: var(--color);
 }

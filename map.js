@@ -153,6 +153,10 @@ map.on('load', async () => {
     .domain([0, d3.max(stations, (d) => d.totalTraffic)])
     .range([0, 25]);
 
+
+  // Step 6.1: departure ratio (0 to 1) -> one of 3 values: 0, 0.5, or 1
+  let stationFlow = d3.scaleQuantize().domain([0, 1]).range([0, 0.5, 1]);
+
   // One circle per station; the key (short_name) lets D3 match circles to stations later
   const circles = svg
     .selectAll('circle')
@@ -161,6 +165,9 @@ map.on('load', async () => {
     .append('circle')
     .attr('r', (d) => radiusScale(d.totalTraffic))
     .attr('stroke-width', 1)
+    .style('--departure-ratio', (d) =>
+      stationFlow(d.totalTraffic ? d.departures / d.totalTraffic : 0.5),
+    )
     .each(function (d) {
       // Add <title> for browser tooltips
       d3.select(this)
@@ -201,8 +208,10 @@ map.on('load', async () => {
     circles
       .data(filteredStations, (d) => d.short_name) // Ensure D3 tracks elements correctly
       .join('circle')
-      .attr('r', (d) => radiusScale(d.totalTraffic));
-
+      .attr('r', (d) => radiusScale(d.totalTraffic))
+      .style('--departure-ratio', (d) =>
+        stationFlow(d.totalTraffic ? d.departures / d.totalTraffic : 0.5),
+      );
     // Keep the tooltips in sync with the filtered numbers
     circles
       .select('title')
