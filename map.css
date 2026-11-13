@@ -15,3 +15,11 @@
   height: 100%;
   pointer-events: none;
 }
+
+/* Step 4.3 + 4.4: station circles */
+#map svg circle {
+  fill: steelblue;
+  fill-opacity: 0.6;
+  stroke: white;
+  pointer-events: auto;
+}

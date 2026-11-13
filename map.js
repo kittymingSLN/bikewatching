@@ -74,19 +74,58 @@ map.on('load', async () => {
   }
 
   let stations = jsonData.data.stations;
-  console.log('Stations Array:', stations);
 
-  // Step 3.3: one circle per station
+  // Step 4.1: load the bike trips (big file, ~21 MB, takes a few seconds)
+  const trips = await d3.csv(
+    'https://dsc106.com/labs/lab07/data/bluebikes-traffic-2024-03.csv',
+  );
+
+  // Step 4.2: count trips leaving and arriving at each station
+  const departures = d3.rollup(
+    trips,
+    (v) => v.length,
+    (d) => d.start_station_id,
+  );
+
+  const arrivals = d3.rollup(
+    trips,
+    (v) => v.length,
+    (d) => d.end_station_id,
+  );
+
+  // Step 4.2: add the counts to each station
+  stations = stations.map((station) => {
+    let id = station.short_name;
+    station.arrivals = arrivals.get(id) ?? 0;
+    station.departures = departures.get(id) ?? 0;
+    station.totalTraffic = station.arrivals + station.departures;
+    return station;
+  });
+
+  console.log('Stations with traffic:', stations);
+
+  // Step 4.3: dot size = traffic (sqrt so the AREA matches the number)
+  const radiusScale = d3
+    .scaleSqrt()
+    .domain([0, d3.max(stations, (d) => d.totalTraffic)])
+    .range([0, 25]);
+
+  // Step 3.3 + 4.3 + 4.4: one circle per station, sized by traffic, with a tooltip
   const circles = svg
     .selectAll('circle')
     .data(stations)
     .enter()
     .append('circle')
-    .attr('r', 5) // Radius of the circle
-    .attr('fill', 'steelblue') // Circle fill color
-    .attr('stroke', 'white') // Circle border color
-    .attr('stroke-width', 1) // Circle border thickness
-    .attr('opacity', 0.8); // Circle opacity
+    .attr('r', (d) => radiusScale(d.totalTraffic))
+    .attr('stroke-width', 1)
+    .each(function (d) {
+      // Add <title> for browser tooltips
+      d3.select(this)
+        .append('title')
+        .text(
+          `${d.totalTraffic} trips (${d.departures} departures, ${d.arrivals} arrivals)`,
+        );
+    });
 
   // Step 3.3: put each circle at its station's spot on the map
   function updatePositions() {
