@@ -6,7 +6,7 @@ import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm';
 console.log('Mapbox GL JS Loaded:', mapboxgl);
 
 // Step 1.3: your Mapbox access token (the one that starts with pk.)
-mapboxgl.accessToken = 'PASTE_YOUR_PK_TOKEN_HERE';
+mapboxgl.accessToken = 'pk.eyJ1Ijoia2l0dHktbWluZyIsImEiOiJjbXdmajJta3owMGIwMzBxNzM3N3NqNTY2In0.LSMdAvfE9XHxaD214J7QjQ';
 
 // Step 1.3: create the map
 const map = new mapboxgl.Map({
