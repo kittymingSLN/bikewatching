@@ -8,3 +8,25 @@ body {
   margin: auto;
   padding: 1em;
 }
+
+/* Step 5.1: title on the left, slider on the right */
+header {
+  display: flex;
+  gap: 1em;
+  align-items: baseline;
+}
+
+header label {
+  margin-left: auto;
+}
+
+/* time and "(any time)" on their own line so the slider doesn't jump */
+header time,
+header em {
+  display: block;
+}
+
+header em {
+  color: gray;
+  font-style: italic;
+}
